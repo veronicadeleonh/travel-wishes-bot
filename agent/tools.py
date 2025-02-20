@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 from tavily import TavilyClient
-
+import json
 load_dotenv()
 
 
@@ -13,13 +13,20 @@ TOOLS = [
         "function": {
             "name": "search_web",
             "description": "Search the web for information",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string"}
-                },
-                "required": ["query"]
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The query to search the web for information"
+                }
             },
+            "required": [
+                "query"
+            ],
+                "additionalProperties": False
+            },
+            "strict": True
         },
     },
 ]
@@ -54,3 +61,4 @@ def get_embeddings(string_to_embed):
         model="text-embedding-ada-002"
     )
     return response.data[0].embedding
+
