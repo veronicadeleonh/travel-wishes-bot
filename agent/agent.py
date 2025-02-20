@@ -9,15 +9,17 @@ load_dotenv()
 
 class TripSummary(BaseModel):
     summary: str = Field(description="The summary of the trip, including the information in all other keys.")
-    location: str = Field(description="The name of the location.")
+    destination: str = Field(description="The name of the location.")
     language: str = Field(description="The main language spoken in the area.")
     currency: str = Field(description="The local currency used.")
     landscape_types: list[str] = Field(description="A list of landscape types (e.g., desert, mountain, forest).")
     best_months_to_visit: list[str] = Field(description="A list of months that are best for visiting.")
     budget: str = Field(description="The typical cost level for a visit (e.g., €€€, €€).")
+    visa_requirements: str = Field(description="Visa requirements for the location.")
     food: str = Field(description="Common or local food in the area. Extend")
     activities: str = Field(description="Notable activities to do in the area.")
-
+    cover_image: str = Field(description="A cover image for the location.")
+    
 
 def trip_creator(messages):
     client = OpenAI()

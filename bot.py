@@ -1,5 +1,4 @@
 import os
-import json
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -9,6 +8,7 @@ from notion_client import Client
 from notion_integration import write_activity
 from telegram.ext import CallbackQueryHandler
 from agent.prompts import SYSTEM_PROMPT
+from agent.tools import generate_cover_image
 
 # 🔐 Load our secret settings
 load_dotenv()
@@ -39,15 +39,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["messages"].append({"role": "user", "content": update.message.text})
 
     messages = context.user_data["messages"]
-
     response = agent(messages)
+
+    print("🔍 Response: ", response)
 
     if response["content"] != "":
         context.user_data["messages"].append({"role": "assistant", "content": response["content"]})
-        await update.message.reply_text(response["content"], parse_mode=ParseMode.MARKDOWN)
+        await update.message.reply_text(response["content"], parse_mode=ParseMode.HTML)
     else:
+        await update.message.reply_text("Searching the web for information...")
+
+        cover_image_url = generate_cover_image(f"A cartoonish travel cover image for {response["trip_summary"]["destination"]}. Keep the relevant illustrations in the center of the image.")
+        await update.message.reply_photo(photo=cover_image_url)
+
         context.user_data["messages"].append({"role": "assistant", "content": response["trip_summary"]["summary"]})
-        await update.message.reply_text(response["trip_summary"]["summary"], parse_mode=ParseMode.MARKDOWN)
+        await update.message.reply_text(response["trip_summary"]["summary"], parse_mode=ParseMode.HTML)
 
         # Ask if we should save in Notion...
         keyboard = [
@@ -57,15 +63,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text('Do you want to save this information?', reply_markup=reply_markup)
 
+
         await write_activity(
-            location=response["trip_summary"]["location"],
+            destination=response["trip_summary"]["destination"],
             language=response["trip_summary"]["language"],
             currency=response["trip_summary"]["currency"],
             landscape_types=response["trip_summary"]["landscape_types"],
             best_months_to_visit=response["trip_summary"]["best_months_to_visit"],
             budget=response["trip_summary"]["budget"],
+            visa_requirements=response["trip_summary"]["visa_requirements"],
             food=response["trip_summary"]["food"],
-            activities=response["trip_summary"]["activities"]
+            activities=response["trip_summary"]["activities"],
+            cover_image=cover_image_url
         )
 
 
@@ -77,25 +86,10 @@ async def handle_callback(update, messages):
     await query.answer()
 
     if query.data == 'save_yes':
-        await query.edit_message_text("Saving to Notion...")
-        
-        # print(messages)
-        # # Save to Notion
-        # await write_activity(
-        #     location=response["trip_summary"]["location"],
-        #     language=response["trip_summary"]["language"],
-        #     currency=response["trip_summary"]["currency"],
-        #     landscape_types=response["trip_summary"]["landscape_types"],
-        #     best_months_to_visit=response["trip_summary"]["best_months_to_visit"],
-        #     budget=response["trip_summary"]["budget"],
-        #     food=response["trip_summary"]["food"],
-        #     activities=response["trip_summary"]["activities"]
-        # )
-
-        await query.edit_message_text("Activity saved to Notion successfully! ✅")
+        await query.edit_message_text("Activity saved to Notion successfully! ✅", reply_markup=None)
 
     elif query.data == 'save_no':
-        await query.edit_message_text("Okay, no worries. Let me know if you change your mind! 😊")
+        await query.edit_message_text("Okay, no worries. Let me know if you change your mind! 😊", reply_markup=None)
 
 
 

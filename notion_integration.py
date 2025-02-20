@@ -10,7 +10,7 @@ TRAVEL_DB_ID = os.getenv("TRAVEL_DB_ID")
 client = Client(auth=NOTION_API_KEY)
 
 
-async def write_activity(location, language, currency, landscape_types, best_months_to_visit, budget, food, activities):
+async def write_activity(destination, language, currency, landscape_types, best_months_to_visit, budget, visa_requirements, food, activities, cover_image):
 
     properties = {}
     budget_mapping = {'€€€': {'name': '€€€', 'id': 'iBKY'}, '€€': {'name': '€€', 'id': 'uKer'}, '€': {'name': '€', 'id': 'WqyF'}}
@@ -19,9 +19,9 @@ async def write_activity(location, language, currency, landscape_types, best_mon
     try:
         
         # Add optional properties if provided
-        if location:
-            properties["Location"] = {
-                "title": [{"text": {"content": location}}]  # Correct title format
+        if destination:
+            properties["Destination"] = {
+                "title": [{"text": {"content": destination}}]  # Correct title format
             }
         
         if language:
@@ -58,6 +58,11 @@ async def write_activity(location, language, currency, landscape_types, best_mon
 
             properties["Budget"] = {"select": budget_mapping.get(budget, {"name": budget})}
 
+        if visa_requirements:
+            properties["Visa Requirements"] = {
+                "rich_text": [{"text": {"content": visa_requirements}}]  # Correct rich_text format
+            }
+
         
         if food:
             properties["Food"] = {
@@ -68,8 +73,37 @@ async def write_activity(location, language, currency, landscape_types, best_mon
             properties["Activities"] = {
                 "rich_text": [{"text": {"content": activities}}]  # Correct rich_text format
             }
+        
 
         children = [
+            {
+                "object": "block",
+                "type": "heading_3",  # Same for this block
+                "heading_3": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": "Visa Requirements"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "object": "block",
+                "type": "paragraph",  # And here as well
+                "paragraph": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": visa_requirements
+                            }
+                        }
+                    ]
+                }
+            },
             {
                 "object": "block",
                 "type": "heading_3",  # Ensure you are using the correct block type
@@ -84,46 +118,27 @@ async def write_activity(location, language, currency, landscape_types, best_mon
                     ]
                 }
             },
-            {
-                "object": "block",
-                "type": "paragraph",  # Make sure it's a paragraph block
-                "paragraph": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {
-                                "content": activities
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "object": "block",
-                "type": "heading_3",  # Same for this block
-                "heading_3": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {
-                                "content": "Food"
-                            }
-                        }
-                    ]
-                }
-            },
-            {
+               {
                 "object": "block",
                 "type": "paragraph",  # And here as well
                 "paragraph": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {
-                                "content": food
-                            }
+                    "rich_text": [{ "type": "text", "text": {"content": activities}
                         }
                     ]
+                }
+            },
+            {
+                "object": "block",
+                "type": "heading_3",  # Ensure you are using the correct block type
+                "heading_3": {
+                    "rich_text": [{"type": "text", "text": {"content": "Food"}}]
+                }
+            },
+               {
+                "object": "block",
+                "type": "paragraph",  # And here as well
+                "paragraph": {
+                    "rich_text": [{"type": "text","text": {"content": food}}]
                 }
             }
         ]    
@@ -134,8 +149,16 @@ async def write_activity(location, language, currency, landscape_types, best_mon
             properties=properties,
             children=children
         )
+
+        # 🌟 Add the cover image (if provided)
+        if cover_image:
+            page_id = new_page["id"]
+            client.pages.update(
+                page_id=page_id,
+                cover={"type": "external", "external": {"url": cover_image}}
+            )
         
-        print(f"✅ Successfully created activity: {location}")
+        print(f"✅ Successfully created activity: {destination}")
         return new_page
         
     except Exception as e:

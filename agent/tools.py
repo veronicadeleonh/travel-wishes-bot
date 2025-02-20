@@ -54,11 +54,13 @@ def invoke_model(messages):
 
 
 # Function to get the embeddings of a string
-def get_embeddings(string_to_embed):
-    client = OpenAI()  
-    response = client.embeddings.create(
-        input=string_to_embed,
-        model="text-embedding-ada-002"
+def generate_cover_image(prompt):
+    client = OpenAI()
+    response = client.images.generate(
+        prompt=prompt,
+        n=1,
+        size="1024x1024"
     )
-    return response.data[0].embedding
+    return response.data[0].url # Return the generated image URL
+
 
