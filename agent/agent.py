@@ -32,6 +32,17 @@ def trip_creator(messages):
     )
     return completion.choices[0].message.parsed
 
+
+def generate_cover_image(prompt):
+    client = OpenAI()
+    response = client.images.generate(
+        prompt=prompt,
+        n=1,
+        size="1024x1024"
+    )
+    return response.data[0].url # Return the generated image URL
+
+
 def agent(messages):
 
     # Initialize the OpenAI client

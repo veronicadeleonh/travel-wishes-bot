@@ -8,7 +8,7 @@ from notion_client import Client
 from utils.notion_integration import write_activity
 from telegram.ext import CallbackQueryHandler
 from agent.prompts import SYSTEM_PROMPT
-from agent.tools import generate_cover_image
+from agent.agent import generate_cover_image
 
 # 🔐 Load our secret settings
 load_dotenv()
