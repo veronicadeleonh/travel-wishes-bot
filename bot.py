@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from agent.agent import agent
 from telegram.constants import ParseMode
 from notion_client import Client
-from notion_integration import write_activity
+from utils.notion_integration import write_activity
 from telegram.ext import CallbackQueryHandler
 from agent.prompts import SYSTEM_PROMPT
 from agent.tools import generate_cover_image
@@ -57,10 +57,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # Ask if we should save in Notion...
         keyboard = [
-            [InlineKeyboardButton("Yes", callback_data='save_yes')],
-            [InlineKeyboardButton("No", callback_data='save_no')]
+            [InlineKeyboardButton("Yes, save", callback_data='save_yes')],
+            [InlineKeyboardButton("No, don't save", callback_data='save_no')]
         ]
+
         reply_markup = InlineKeyboardMarkup(keyboard)
+
         await update.message.reply_text('Do you want to save this information?', reply_markup=reply_markup)
 
 
@@ -86,16 +88,18 @@ async def handle_callback(update, context):
     await query.answer()  # Acknowledge the button press
 
     print(f"Received action: {query.data}")
+    print(f"Message to edit: {query.message.text}")
 
     # Determine the new message text based on the action
     new_text = "Activity saved to Notion successfully! ✅" if query.data == 'save_yes' else "Okay, no worries. Let me know if you change your mind! 😊"
 
     # Check the action and edit the message to remove buttons
     if query.data in ['save_yes', 'save_no']:
+        print("Editing message to remove buttons")
         # Edit the message and remove the buttons (empty inline keyboard)
         await query.edit_message_text(
             text=new_text,
-            reply_markup=InlineKeyboardMarkup([])  # Empty keyboard to remove buttons
+            reply_markup=None  # Empty keyboard to remove buttons
         )
 
 

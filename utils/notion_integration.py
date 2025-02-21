@@ -30,10 +30,13 @@ async def write_activity(destination, local_timezone,language, currency, landsca
             }
         
         if language:
-            properties["Language"] = {
-                "multi_select": [{"name": language}]  # Correct multi_select format
-            }
+            # Split the language string by comma and strip spaces
+            language_list = [lang.strip() for lang in language.split(",")]
 
+            # Create the multi_select format for Notion
+            properties["Language"] = {
+                "multi_select": [{"name": lang} for lang in language_list]
+            }
 
         if currency:
             properties["Currency"] = {
@@ -86,7 +89,7 @@ async def write_activity(destination, local_timezone,language, currency, landsca
                         {
                             "type": "text",
                             "text": {
-                                "content": "Visa Requirements"
+                                "content": "🛂 Visa Requirements"
                             }
                         }
                     ]
@@ -113,7 +116,7 @@ async def write_activity(destination, local_timezone,language, currency, landsca
                         {
                             "type": "text",
                             "text": {
-                                "content": "Health Requirements"
+                                "content": "💉 Health Requirements"
                             }
                         }
                     ]
@@ -136,31 +139,21 @@ async def write_activity(destination, local_timezone,language, currency, landsca
             {
                 "object": "block",
                 "type": "heading_3",  # Ensure you are using the correct block type
-                "heading_3": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {
-                                "content": "Activities"
-                            }
-                        }
+                "heading_3": {"rich_text": [{"type": "text","text": {"content": "🏞️ Activities"}}
                     ]
                 }
             },
                {
                 "object": "block",
                 "type": "paragraph",  # And here as well
-                "paragraph": {
-                    "rich_text": [{ "type": "text", "text": {"content": activities}
-                        }
-                    ]
+                "paragraph": {"rich_text": [{ "type": "text", "text": {"content": activities}}]
                 }
             },
             {
                 "object": "block",
                 "type": "heading_3",  # Ensure you are using the correct block type
                 "heading_3": {
-                    "rich_text": [{"type": "text", "text": {"content": "Food"}}]
+                    "rich_text": [{"type": "text", "text": {"content": "🥘 Food"}}]
                 }
             },
                {
@@ -168,13 +161,6 @@ async def write_activity(destination, local_timezone,language, currency, landsca
                 "type": "paragraph",  # And here as well
                 "paragraph": {
                     "rich_text": [{"type": "text","text": {"content": food}}]
-                }
-            },
-                        {
-                "object": "block",
-                "type": "heading_3",  # Ensure you are using the correct block type
-                "heading_3": {
-                    "rich_text": [{"type": "text", "text": {"content": "Best Flight Deals"}}]
                 }
             }
         ]    

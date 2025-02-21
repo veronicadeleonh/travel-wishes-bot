@@ -1,15 +1,15 @@
 # TravelWishesBot 🗺️🧭
 
-_A Telegram bot that helps you plan your travel._
+_A Telegram bot that helps you find the best destinations for your next travel saving your favorite results to Notion._
 
 ## 🚀 Features
 
 🔍 **Explore Destinations** – Get travel insights on cities, landscapes, and experiences.  
 🎭 **Discover Activities** – Find things to do based on your interests.  
-🗺️ **Plan Smart** – Save travel ideas to your Notion database.  
 📅 **Best Time to Visit** – Know when to go based on seasons and events.  
 🛂 **Visa Requirements** – Stay informed about entry rules.
 🏥 **Health Requirements** – Stay informed about health requirements.
+🗺️ **Plan Smart** – Save travel ideas to your Notion database.
 
 ## 🛠️ Technologies Used
 
