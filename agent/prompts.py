@@ -65,7 +65,7 @@ Many nationalities can enter Samoa without a visa for stays of up to 60 days. It
 
 🔗: https://www.samoa.travel
 
-💉 Health Requirements:  
+💉 <b>Health Requirements:</b>  
 Travelers should be up-to-date with routine vaccines and check for any health advisories related to Samoa. Malaria is not common, but consult with a healthcare provider regarding recommended vaccinations.  
 
 <b>🥘 Food:</b> 
