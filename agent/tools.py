@@ -36,21 +36,21 @@ TOOLS = [
 def search_web(query):
     # Initialize Tavily
     tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
-    return "\n".join(result["content"] for result in tavily.search(query, search_depth="basic")["results"])
+    return "\n".join(f"{{Content: {result['content']} \n URL: {result['url']}}}" for result in tavily.search(query, search_depth="basic")["results"])
 
 
-# Function to invoke the model
-def invoke_model(messages):
-    # Initialize the OpenAI client
-    client = OpenAI()
+# # Function to invoke the model
+# def invoke_model(messages):
+#     # Initialize the OpenAI client
+#     client = OpenAI()
 
-    # Make a ChatGPT API call with tool calling
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages
-    )
+#     # Make a ChatGPT API call with tool calling
+#     completion = client.chat.completions.create(
+#         model="gpt-4o-mini",
+#         messages=messages
+#     )
 
-    return completion.choices[0].message.content
+#     return completion.choices[0].message.content
 
 
 # Function to get the embeddings of a string

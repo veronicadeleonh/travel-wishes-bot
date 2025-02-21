@@ -10,7 +10,7 @@ TRAVEL_DB_ID = os.getenv("TRAVEL_DB_ID")
 client = Client(auth=NOTION_API_KEY)
 
 
-async def write_activity(destination, language, currency, landscape_types, best_months_to_visit, budget, visa_requirements, food, activities, cover_image):
+async def write_activity(destination, local_timezone,language, currency, landscape_types, best_months_to_visit, budget, visa_requirements, health_requirements, food, activities, cover_image):
 
     properties = {}
     budget_mapping = {'€€€': {'name': '€€€', 'id': 'iBKY'}, '€€': {'name': '€€', 'id': 'uKer'}, '€': {'name': '€', 'id': 'WqyF'}}
@@ -23,20 +23,18 @@ async def write_activity(destination, language, currency, landscape_types, best_
             properties["Destination"] = {
                 "title": [{"text": {"content": destination}}]  # Correct title format
             }
-        
-        if language:
-            existing_languages = ["French", "Korean", "English", "Spanish", "Portuguese", "Italian", "Japanese", "Russian", "Arabic", "Turkish"]  # Predefined languages (can be fetched manually from your Notion database)
-            language_list = language.split(",")  # Assume you get a comma-separated list from your web search
 
-            selected_languages = [
-                {"name": lang.strip()} if lang.strip() in existing_languages else {"name": "Other"}
-                for lang in language_list
-            ]
-    
-            properties["Language"] = {
-                "multi_select": selected_languages
+        if local_timezone:
+            properties["Local Timezone"] = {
+                "rich_text": [{"text": {"content": local_timezone}}]  # Currency as text field
             }
         
+        if language:
+            properties["Language"] = {
+                "multi_select": [{"name": language}]  # Correct multi_select format
+            }
+
+
         if currency:
             properties["Currency"] = {
                 "rich_text": [{"text": {"content": currency}}]  # Currency as text field
@@ -63,6 +61,10 @@ async def write_activity(destination, language, currency, landscape_types, best_
                 "rich_text": [{"text": {"content": visa_requirements}}]  # Correct rich_text format
             }
 
+        if health_requirements:
+            properties["Health Requirements"] = {
+                "rich_text": [{"text": {"content": health_requirements}}]  # Correct rich_text format
+            }
         
         if food:
             properties["Food"] = {
@@ -103,6 +105,33 @@ async def write_activity(destination, language, currency, landscape_types, best_
                         }
                     ]
                 }
+            },{
+                "object": "block",
+                "type": "heading_3",  # Same for this block
+                "heading_3": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": "Health Requirements"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "object": "block",
+                "type": "paragraph",  # And here as well
+                "paragraph": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": health_requirements
+                            }
+                        }
+                    ]
+                }
             },
             {
                 "object": "block",
@@ -139,6 +168,13 @@ async def write_activity(destination, language, currency, landscape_types, best_
                 "type": "paragraph",  # And here as well
                 "paragraph": {
                     "rich_text": [{"type": "text","text": {"content": food}}]
+                }
+            },
+                        {
+                "object": "block",
+                "type": "heading_3",  # Ensure you are using the correct block type
+                "heading_3": {
+                    "rich_text": [{"type": "text", "text": {"content": "Best Flight Deals"}}]
                 }
             }
         ]    

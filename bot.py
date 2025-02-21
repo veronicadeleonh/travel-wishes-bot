@@ -22,7 +22,7 @@ client = Client(auth=NOTION_API_KEY)
 # 👋 This function runs when someone starts the bot
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Greets users when they first start the bot"""
-    await update.message.reply_text('Hello! 👋 I am your friendly bot assistant! Send me any message and I will respond! 🌟')
+    await update.message.reply_text('Hello! 👋 I\'m here to help you find the perfect destination for your next trip! 🗺️🧭')
 
 
 
@@ -41,13 +41,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     messages = context.user_data["messages"]
     response = agent(messages)
 
-    print("🔍 Response: ", response)
+    # print("🔍 Response: ", response)
 
     if response["content"] != "":
         context.user_data["messages"].append({"role": "assistant", "content": response["content"]})
         await update.message.reply_text(response["content"], parse_mode=ParseMode.HTML)
     else:
-        await update.message.reply_text("Searching the web for information...")
+        await update.message.reply_text("🛠️ Building your answer")
 
         cover_image_url = generate_cover_image(f"A cartoonish travel cover image for {response["trip_summary"]["destination"]}. Keep the relevant illustrations in the center of the image.")
         await update.message.reply_photo(photo=cover_image_url)
@@ -67,30 +67,36 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await write_activity(
             destination=response["trip_summary"]["destination"],
             language=response["trip_summary"]["language"],
+            local_timezone=response["trip_summary"]["local_timezone"],
             currency=response["trip_summary"]["currency"],
             landscape_types=response["trip_summary"]["landscape_types"],
             best_months_to_visit=response["trip_summary"]["best_months_to_visit"],
             budget=response["trip_summary"]["budget"],
             visa_requirements=response["trip_summary"]["visa_requirements"],
+            health_requirements=response["trip_summary"]["health_requirements"],
             food=response["trip_summary"]["food"],
             activities=response["trip_summary"]["activities"],
             cover_image=cover_image_url
         )
 
 
-
-# 🔑 This function handles any callback queries
-async def handle_callback(update, messages):
+async def handle_callback(update, context):
     """Handles callback queries from inline buttons."""
     query = update.callback_query
-    await query.answer()
+    await query.answer()  # Acknowledge the button press
 
-    if query.data == 'save_yes':
-        await query.edit_message_text("Activity saved to Notion successfully! ✅", reply_markup=None)
+    print(f"Received action: {query.data}")
 
-    elif query.data == 'save_no':
-        await query.edit_message_text("Okay, no worries. Let me know if you change your mind! 😊", reply_markup=None)
+    # Determine the new message text based on the action
+    new_text = "Activity saved to Notion successfully! ✅" if query.data == 'save_yes' else "Okay, no worries. Let me know if you change your mind! 😊"
 
+    # Check the action and edit the message to remove buttons
+    if query.data in ['save_yes', 'save_no']:
+        # Edit the message and remove the buttons (empty inline keyboard)
+        await query.edit_message_text(
+            text=new_text,
+            reply_markup=InlineKeyboardMarkup([])  # Empty keyboard to remove buttons
+        )
 
 
 # 🚨 This function handles any errors that might happen
