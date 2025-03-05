@@ -2,7 +2,7 @@
 
 _A Telegram bot that helps you find the best destinations for your next travel saving your favorite results to Notion._
 
-## 🚀 Features
+## Features
 
 - **Explore Destinations** – Get travel insights on cities, landscapes, and experiences.
 - **Discover Activities** – Find things to do based on your interests.
@@ -11,7 +11,7 @@ _A Telegram bot that helps you find the best destinations for your next travel s
 - **Health Requirements** – Stay informed about health requirements.
 - **Plan Smart** – Save travel ideas to your Notion database.
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 - **Python** 🐍 – Core language for the bot.
 - **Notion API** – Store and organize travel plans.
@@ -49,13 +49,13 @@ TAVILY_API_KEY=your_tavily_token
 python bot.py
 ```
 
-## 📌 Usage
+## Usage
 
 1. Start the bot on Telegram.
 2. Send a travel-related message (e.g., "Best places to visit in Japan").
 3. Save your favorite results to Notion with one tap!
 
-## 🤝 Contributing
+## Contributing
 
 💡 Got an idea? Feel free to contribute!
 
